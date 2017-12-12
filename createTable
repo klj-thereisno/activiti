@@ -1,0 +1,64 @@
+package com.javing.activiti;
+
+import java.io.IOException;
+import java.net.URL;
+import java.util.Enumeration;
+
+import org.activiti.engine.ActivitiIllegalArgumentException;
+import org.activiti.engine.ProcessEngine;
+import org.activiti.engine.ProcessEngineConfiguration;
+import org.activiti.engine.ProcessEngines;
+import org.junit.Test;
+
+public class DemoTest {
+
+	/**
+	 * method 1
+	 * create tables of activiti without activiti.cfg.xml
+	 * @throws Exception
+	 */
+	@Test
+	public void alone() throws Exception {
+		ProcessEngineConfiguration config = ProcessEngineConfiguration.createStandaloneProcessEngineConfiguration();
+		ProcessEngine engine = config.setJdbcDriver("com.mysql.jdbc.Driver")
+									 .setJdbcUrl("jdbc:mysql://localhost:3306/db_apply")
+									 .setJdbcUsername("root")
+									 .setJdbcPassword("xxx")
+									 .setDatabaseSchemaUpdate(ProcessEngineConfiguration.DB_SCHEMA_UPDATE_TRUE)
+									 .buildProcessEngine();
+		System.out.println(engine.getName());
+		System.out.println(engine);
+	}
+	/**
+	 * method 2
+	 * create tables of activiti with default activiti.cfg.xml
+	 * 
+	 *   public static ProcessEngineConfiguration createProcessEngineConfigurationFromResourceDefault() {
+	 *     return createProcessEngineConfigurationFromResource("activiti.cfg.xml", "processEngineConfiguration");
+	 *	 }
+	 * @throws Exception
+	 */
+	@Test
+	public void auto() {
+		ProcessEngineConfiguration config = ProcessEngineConfiguration.createProcessEngineConfigurationFromResourceDefault();
+		config.buildProcessEngine();
+	}
+	
+	/**
+	 * method 3
+	 * create tables of activiti with default activiti.cfg.xml
+	 * 
+	 *   Enumeration<URL> resources = null;
+	 *     try {
+	 *      resources = classLoader.getResources("activiti.cfg.xml");
+	 *    } catch (IOException e) {
+	 *      throw new ActivitiIllegalArgumentException("problem retrieving activiti.cfg.xml resources on the classpath: " + System.getProperty("java.class.path"), e);
+	 *    }
+	 * @throws Exception
+	 */
+	@Test
+	public void engine() {
+		ProcessEngines.getDefaultProcessEngine();
+	}
+
+}
