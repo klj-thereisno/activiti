@@ -1,0 +1,69 @@
+package com.javing.activiti;
+
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.util.zip.ZipInputStream;
+
+import org.activiti.engine.ProcessEngine;
+import org.activiti.engine.ProcessEngines;
+import org.activiti.engine.RepositoryService;
+import org.activiti.engine.repository.Deployment;
+import org.junit.Before;
+import org.junit.Test;
+
+public class DeployTest {
+
+	ProcessEngine engine;
+	
+	@Before
+	public void engine() {
+		engine = ProcessEngines.getDefaultProcessEngine();
+	}
+	
+	/**
+	 * deploy with classpathResource
+	 */
+	@Test
+	public void deploy() {
+		RepositoryService repo = engine.getRepositoryService();
+		Deployment deployment = repo.createDeployment()
+									.addClasspathResource("diagrams/leave.bpmn")
+									.addClasspathResource("diagrams/leave.png")
+									.name("class部署")
+									.deploy();
+		System.out.println("getId: " + deployment.getId());
+		System.out.println("getKey: " + deployment.getKey());
+		System.out.println("getName: " + deployment.getName());
+		System.out.println("getDeploymentTime: " + deployment.getDeploymentTime());
+	}
+	
+	/**
+	 * deploy with absolute path .zip
+	 */
+	@Test
+	public void deployWithZip() {
+		try {
+			engine.getRepositoryService()
+					.createDeployment()
+					.addZipInputStream(new ZipInputStream(new FileInputStream("C:\\Users\\Administrator\\Desktop\\leave.zip")))
+					.name("zip部署")
+					.deploy();
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	/**
+	 * deploy with classpath .zip
+	 */
+	@Test
+	public void deployWithZipInPro(){
+		engine.getRepositoryService()
+				.createDeployment()
+				.addZipInputStream(new ZipInputStream(getClass().getResourceAsStream("/leave.zip")))
+				.name("zip部署2")
+				.deploy();
+	}
+	
+}
