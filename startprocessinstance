@@ -1,0 +1,59 @@
+package com.javing.activiti;
+
+import org.activiti.engine.ProcessEngine;
+import org.activiti.engine.ProcessEngines;
+import org.activiti.engine.RuntimeService;
+import org.activiti.engine.runtime.ProcessInstance;
+import org.activiti.engine.task.Task;
+import org.junit.Before;
+import org.junit.Test;
+
+public class StartTest {
+
+	ProcessEngine engine;
+	
+	@Before
+	public void engine() {
+		engine = ProcessEngines.getDefaultProcessEngine();
+	}
+	
+	/**
+	 * start by process definition id
+	 */
+	@Test
+	public void startById(){
+		RuntimeService runtimeService = engine.getRuntimeService();
+		ProcessInstance instance = runtimeService.startProcessInstanceById("请假流程图:3:5004");
+		System.out.println("getId: " + instance.getId());
+		System.out.println("getProcessDefinitionId: " + instance.getProcessDefinitionId());
+		System.out.println("getProcessDefinitionKey: " + instance.getProcessDefinitionKey());
+		System.out.println("getProcessDefinitionName: " + instance.getProcessDefinitionName());
+	}
+	
+	/**
+	 * start by process definition key
+	 * (Starts a new process instance in the latest version of the process definition with the given key.)
+	 */
+	@Test
+	public void startByKey(){
+		RuntimeService runtimeService = engine.getRuntimeService();
+		ProcessInstance instance = runtimeService.startProcessInstanceByKey("请假流程图");
+		System.out.println("getId: " + instance.getId());
+		System.out.println("getProcessDefinitionId: " + instance.getProcessDefinitionId());
+		System.out.println("getProcessDefinitionKey: " + instance.getProcessDefinitionKey());
+		System.out.println("getProcessDefinitionName: " + instance.getProcessDefinitionName());
+	}
+	
+	/**
+	 * complete task by assignee
+	 */
+	@Test
+	public void completeById(){
+		Task task = engine.getTaskService().createTaskQuery().taskAssignee("小明").singleResult();
+		System.out.println("getId: " + task.getId());
+		System.out.println("getName: " + task.getName());
+		System.out.println("getAssignee: " + task.getAssignee());
+		engine.getTaskService().complete(task.getId());
+	}
+	
+}
