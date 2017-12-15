@@ -1,0 +1,76 @@
+package com.javing.activiti;
+
+import java.io.Serializable;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+
+import org.activiti.engine.ProcessEngine;
+import org.activiti.engine.ProcessEngines;
+import org.activiti.engine.RuntimeService;
+import org.activiti.engine.TaskService;
+import org.activiti.engine.runtime.ProcessInstance;
+import org.activiti.engine.task.Task;
+import org.junit.Test;
+/**
+ * @author Administrator
+ *
+ */
+public class VariableTest {
+	
+	ProcessEngine engine = ProcessEngines.getDefaultProcessEngine();
+	
+	RuntimeService runtimeService = engine.getRuntimeService();
+	
+	TaskService taskService = engine.getTaskService();
+	
+	/**
+	 * step 1 startByKeyWithVariable
+	 */
+	@Test
+	public void startByKey(){
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("key", "value");
+		map.put("student", new Student(1, "zhangsan"));
+		ProcessInstance instance = runtimeService.startProcessInstanceByKey("请假流程图", map);
+		System.out.println("getId: " + instance.getId());
+		System.out.println("getProcessDefinitionId: " + instance.getProcessDefinitionId());
+		System.out.println("getProcessDefinitionKey: " + instance.getProcessDefinitionKey());
+		System.out.println("getProcessDefinitionName: " + instance.getProcessDefinitionName());
+	}
+	
+	/**
+	 * step 2 completeTaskAndAddVariable
+	 */
+	@Test
+	public void completeTaskAndAddVariable(){
+		Task task = taskService.createTaskQuery().taskAssignee("小明").singleResult();
+		System.out.println(taskService.getVariable(task.getId(), "key"));
+		System.out.println(taskService.getVariable(task.getId(), "student"));
+		System.out.println(taskService.getVariable(task.getId(), "date")); // null because step 1 noset
+		System.out.println("getId: " + task.getId());
+		System.out.println("getName: " + task.getName());
+		System.out.println("getAssignee: " + task.getAssignee());
+		Map<String, Object> map = new HashMap<String, Object>();;
+		map.put("date", new Date());
+		engine.getTaskService().complete(task.getId(), map); // next node also can get variable 'date'
+	}
+	
+}
+class Student implements Serializable{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	int id;
+	String name;
+	public Student(int id, String name) {
+		super();
+		this.id = id;
+		this.name = name;
+	}
+	@Override
+	public String toString() {
+		return "Student [id=" + id + ", name=" + name + "]";
+	}
+}
