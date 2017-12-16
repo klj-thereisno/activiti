@@ -1,0 +1,65 @@
+package com.javing.activiti;
+
+import java.util.List;
+import org.activiti.engine.HistoryService;
+import org.activiti.engine.ProcessEngine;
+import org.activiti.engine.ProcessEngines;
+import org.activiti.engine.history.HistoricActivityInstance;
+import org.activiti.engine.history.HistoricProcessInstance;
+import org.activiti.engine.history.HistoricTaskInstance;
+import org.junit.Test;
+
+public class PageTest {
+	
+	ProcessEngine engine = ProcessEngines.getDefaultProcessEngine();
+	
+	HistoryService historyService = engine.getHistoryService();
+	
+	/**
+	 * get historicProcessInstance by instanceId
+	 */
+	@Test
+	public void hisProcess(){
+		HistoricProcessInstance instance = historyService.createHistoricProcessInstanceQuery()
+															.processInstanceId("120001")
+															.singleResult();
+		System.out.println("getId:" + instance.getId());
+		System.out.println("getProcessDefinitionKey:" + instance.getProcessDefinitionKey());
+		System.out.println("getProcessDefinitionName:" + instance.getProcessDefinitionName());
+	}
+	
+	/**
+	 * get historicActivityInstance by processDefinitionId
+	 */
+	@Test
+	public void hisActive(){
+		List<HistoricActivityInstance> list = historyService.createHistoricActivityInstanceQuery()
+															.processDefinitionId("para:1:112504")
+															.finished()
+															.listPage(1, 5); // from 2nd select 5 records
+		System.out.println(list.size());
+		for (HistoricActivityInstance instance : list) {
+			System.out.println("getId:" + instance.getId());
+			System.out.println("getProcessDefinitionId:" + instance.getProcessDefinitionId());
+			System.out.println();
+		}
+	}
+	
+	/**
+	 * get historicTaskInstance by processDefinitionId
+	 * different from historicActivityInstance is no start and end node
+	 */
+	@Test
+	public void hisTask(){
+		List<HistoricTaskInstance> list = historyService.createHistoricTaskInstanceQuery()
+															.processDefinitionId("para:1:112504")
+															.listPage(1, 5); // from 2nd select 5 records
+		System.out.println(list.size());
+		for (HistoricTaskInstance instance : list) {
+			System.out.println("getId:" + instance.getId());
+			System.out.println("getProcessDefinitionId:" + instance.getProcessDefinitionId());
+			System.out.println();
+		}
+	}
+	
+}
