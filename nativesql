@@ -1,0 +1,37 @@
+package com.javing.activiti;
+
+import java.util.List;
+import org.activiti.engine.HistoryService;
+import org.activiti.engine.ProcessEngine;
+import org.activiti.engine.ProcessEngines;
+import org.activiti.engine.history.HistoricActivityInstance;
+import org.activiti.engine.history.HistoricProcessInstance;
+import org.activiti.engine.history.HistoricTaskInstance;
+import org.junit.Test;
+
+public class PageTest {
+	
+	ProcessEngine engine = ProcessEngines.getDefaultProcessEngine();
+	
+	HistoryService historyService = engine.getHistoryService();
+	
+	@Test
+	public void sql(){
+		String sql = "select * from act_hi_taskinst where proc_def_id_ like '%图5%'";
+		List<HistoricTaskInstance> list = historyService.createNativeHistoricTaskInstanceQuery().sql(sql).listPage(1, 3);
+		System.out.println(list.size());
+		for (HistoricTaskInstance instance : list) {
+			System.out.println("getId:" + instance.getId());
+			System.out.println("getProcessDefinitionId:" + instance.getProcessDefinitionId());
+			System.out.println();
+		}
+	}
+	
+	@Test
+	public void sql2(){
+		String sql = "select count(*) from act_hi_taskinst where proc_def_id_ like '%图5%'";
+		long size = historyService.createNativeHistoricTaskInstanceQuery().sql(sql).count();
+		System.out.println(size);
+	}
+	
+}
